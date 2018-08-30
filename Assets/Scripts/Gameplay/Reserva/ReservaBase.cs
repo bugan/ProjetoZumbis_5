@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class ReservaBase : MonoBehaviour, IReservaDeObjetos
 {
-
     [SerializeField]
     protected GameObject prefab;
 

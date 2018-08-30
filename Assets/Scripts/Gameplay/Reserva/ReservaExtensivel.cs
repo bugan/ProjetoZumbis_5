@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class ReservaExtensivel : ReservaBase
 {
-
-
+    
     override public void DevolverObjeto(IReservavel objeto)
     {
         objeto.AoEntrarNaReserva();

@@ -8,6 +8,7 @@ using System;
 
 public class BotaoAnalogico : MonoBehaviour, IDragHandler, IPointerDownHandler, IPointerUpHandler
 {
+
     [SerializeField]
     private Image imagemFundo;
     [SerializeField]

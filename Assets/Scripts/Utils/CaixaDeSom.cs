@@ -4,6 +4,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(AudioSource))]
 public class CaixaDeSom : MonoBehaviour {
+
     [SerializeField]
     private AudioClip[] clipesDeAudio;
 

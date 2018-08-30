@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Bala : MonoBehaviour, IReservavel
 {
+
     public float Velocidade = 20;
     public AudioClip SomDeMorte;
 

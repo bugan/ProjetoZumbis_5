@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class ReservaFixa : ReservaBase
 {
-  
     [SerializeField]
     private int quantidade;
 

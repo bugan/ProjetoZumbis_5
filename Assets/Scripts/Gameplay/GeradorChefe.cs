@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class GeradorChefe : MonoBehaviour
 {
+
     public float tempoEntreGeracoes = 60;
     public Transform[] PosicoesPossiveisDeGeracao;
 
