@@ -7,6 +7,8 @@ using UnityEngine.UI;
 
 public class ControlaChefe : MonoBehaviour, IMatavel, IReservavel
 {
+    private const string TAG_JOGADOR = "Jogador";
+
     public IReservaDeObjetos Reserva { set { this.reserva = value; } }
     public GameObject GameObject { get { return this.gameObject; } }
 
@@ -40,7 +42,7 @@ public class ControlaChefe : MonoBehaviour, IMatavel, IReservavel
     }
     private void Start()
     {
-        jogador = GameObject.FindWithTag("Jogador").transform;
+        jogador = GameObject.FindWithTag(TAG_JOGADOR).transform;
         sliderVidaChefe.maxValue = statusChefe.VidaInicial;
         AtualizarInterface();
     }

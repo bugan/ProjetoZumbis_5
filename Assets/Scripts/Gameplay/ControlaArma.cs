@@ -7,8 +7,6 @@ using UnityEngine.Events;
 public class ControlaArma : MonoBehaviour
 {
     [SerializeField]
-    private GameObject bala;
-    [SerializeField]
     private Transform canoDaArma;
     [SerializeField]
     private UnityEvent aoAtirar;

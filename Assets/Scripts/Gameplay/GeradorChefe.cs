@@ -4,48 +4,46 @@ using UnityEngine;
 
 public class GeradorChefe : MonoBehaviour
 {
-
-    public float tempoEntreGeracoes = 60;
-    public Transform[] PosicoesPossiveisDeGeracao;
-
+    private const string TAG_JOGADOR = "Jogador";
+    [SerializeField]
+    private float tempoEntreGeracoes = 60;
     [SerializeField]
     private ReservaBase reserva;
-
-    private float tempoParaProximaGeracao = 0;
+    [SerializeField]
+    private Transform[] posicoesPossiveisDeGeracao;
+    
+    
     private Transform jogador;
     private ControlaInterface scriptControlaInteface;
 
     private void Start()
     {
-        tempoParaProximaGeracao = tempoEntreGeracoes;
         scriptControlaInteface = GameObject.FindObjectOfType(typeof(ControlaInterface)) as ControlaInterface;
-        jogador = GameObject.FindWithTag("Jogador").transform;
+        jogador = GameObject.FindWithTag(TAG_JOGADOR).transform;
+        InvokeRepeating("GerarChefe", 0, this.tempoEntreGeracoes);
     }
-
-    private void Update()
+    
+    private IEnumerator GerarChefe()
     {
-        if (Time.timeSinceLevelLoad > tempoParaProximaGeracao)
+        Vector3 posicaoDeCriacao = CalcularPosicaoMaisDistanteDoJogador();
+        if (this.reserva.TemObjeto())
         {
-            Vector3 posicaoDeCriacao = CalcularPosicaoMaisDistanteDoJogador();
-            if (this.reserva.TemObjeto())
-            {
-                var chefe = this.reserva.PegarObjeto();
-                chefe.GameObject.transform.position = posicaoDeCriacao;
-                scriptControlaInteface.AparecerTextoChefeCriado();
-                tempoParaProximaGeracao = Time.timeSinceLevelLoad + tempoEntreGeracoes;
-            }
+            var chefe = this.reserva.PegarObjeto();
+            chefe.GameObject.transform.position = posicaoDeCriacao;
+            scriptControlaInteface.AparecerTextoChefeCriado();
         }
+        return null;
     }
 
-    Vector3 CalcularPosicaoMaisDistanteDoJogador ()
+    private Vector3 CalcularPosicaoMaisDistanteDoJogador()
     {
         Vector3 posicaoDeMaiorDistancia = Vector3.zero;
         float maiorDistancia = 0;
 
-        foreach (Transform posicao in PosicoesPossiveisDeGeracao)
+        foreach (Transform posicao in posicoesPossiveisDeGeracao)
         {
             float distanciaEntreOJogador = Vector3.Distance(posicao.position, jogador.position);
-            if(distanciaEntreOJogador > maiorDistancia)
+            if (distanciaEntreOJogador > maiorDistancia)
             {
                 maiorDistancia = distanciaEntreOJogador;
                 posicaoDeMaiorDistancia = posicao.position;

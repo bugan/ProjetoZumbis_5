@@ -15,7 +15,7 @@ public class Bala : MonoBehaviour, IReservavel
             return this.gameObject;
         }
     }
-    
+
     public IReservaDeObjetos Reserva
     {
         set
@@ -32,29 +32,21 @@ public class Bala : MonoBehaviour, IReservavel
         rigidbodyBala = GetComponent<Rigidbody>();
     }
 
-    // Update is called once per frame
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         rigidbodyBala.MovePosition
             (rigidbodyBala.position +
             transform.forward * Velocidade * Time.deltaTime);
     }
 
-    void OnTriggerEnter(Collider objetoDeColisao)
+    private void OnTriggerEnter(Collider objetoDeColisao)
     {
         Quaternion rotacaoOpostaABala = Quaternion.LookRotation(-transform.forward);
-        switch (objetoDeColisao.tag)
+        
+        var inimigo = objetoDeColisao.GetComponent<IMatavel>();
+        if(inimigo != null)
         {
-            case "Inimigo":
-                ControlaInimigo inimigo = objetoDeColisao.GetComponent<ControlaInimigo>();
-                inimigo.TomarDano(1);
-                inimigo.ParticulaSangue(transform.position, rotacaoOpostaABala);
-                break;
-            case "ChefeDeFase":
-                ControlaChefe chefe = objetoDeColisao.GetComponent<ControlaChefe>();
-                chefe.TomarDano(1);
-                chefe.ParticulaSangue(transform.position, rotacaoOpostaABala);
-                break;
+            inimigo.TomarDano(1);
         }
 
         this.reserva.DevolverObjeto(this);

@@ -4,102 +4,79 @@ using UnityEngine;
 
 public class GeradorZumbis : MonoBehaviour
 {
-
-    public ReservaBase reserva;
-
-    public float TempoGerarZumbi = 1;
-
-    public LayerMask LayerZumbi;
-
-
-    private int quantidadeMaximaDeZumbisVivos = 2;
-    private int quantidadeDeZumbisVivos;
+    private const string TAG_JOGADOR = "Jogador";
+    [SerializeField]
+    private ReservaBase reserva;
+    [SerializeField]
+    private float TempoGerarZumbi = 1;
+    [SerializeField]
+    private LayerMask LayerZumbi;
 
     private float distanciaDeGeracao = 3;
     private float DistanciaDoJogadorParaGeracao = 20;
-    private float tempoProximoAumentoDeDificuldade = 30;
-    private float contadorTempo = 0;
-    private float contadorDeAumentarDificuldade;
-
+    
     private GameObject jogador;
 
     private void Start()
     {
-        jogador = GameObject.FindWithTag("Jogador");
-        contadorDeAumentarDificuldade = tempoProximoAumentoDeDificuldade;
-        for (int i = 0; i < quantidadeMaximaDeZumbisVivos; i++)
-        {
-            StartCoroutine(GerarNovoZumbi());
-        }
+        jogador = GameObject.FindWithTag(TAG_JOGADOR);
+        
+        InvokeRepeating("GerarZumbi", 0, this.TempoGerarZumbi);
+       
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-        bool possoGerarZumbisPelaDistancia = Vector3.Distance(transform.position,
-            jogador.transform.position) >
-            DistanciaDoJogadorParaGeracao;
-
-        if (possoGerarZumbisPelaDistancia == true &&
-            quantidadeDeZumbisVivos < quantidadeMaximaDeZumbisVivos)
-        {
-            contadorTempo += Time.deltaTime;
-
-            if (contadorTempo >= TempoGerarZumbi)
-            {
-                StartCoroutine(GerarNovoZumbi());
-                contadorTempo = 0;
-            }
-        }
-
-        if (Time.timeSinceLevelLoad > contadorDeAumentarDificuldade)
-        {
-            quantidadeMaximaDeZumbisVivos++;
-            contadorDeAumentarDificuldade = Time.timeSinceLevelLoad +
-                tempoProximoAumentoDeDificuldade;
-        }
-    }
-
-    void OnDrawGizmos()
+    private void OnDrawGizmos()
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, distanciaDeGeracao);
     }
 
-    IEnumerator GerarNovoZumbi()
-    {
-        Vector3 posicaoDeCriacao = AleatorizarPosicao();
-        Collider[] colisores = Physics.OverlapSphere(posicaoDeCriacao, 1, LayerZumbi);
 
-        while (colisores.Length > 0)
-        {
-            posicaoDeCriacao = AleatorizarPosicao();
-            colisores = Physics.OverlapSphere(posicaoDeCriacao, 1, LayerZumbi);
-            yield return null;
-        }
+    private bool EstaLongeOsuficiente()
+    {
+        return Vector3.Distance(transform.position,
+            jogador.transform.position) >
+            DistanciaDoJogadorParaGeracao;
+    }
+
+    private IEnumerator GerarZumbi()
+    {
+        if (!EstaLongeOsuficiente()) return null;
+        
+        Vector3 posicaoDeCriacao = ProcurarPosicaoValida();
 
         if (this.reserva.TemObjeto())
         {
-            var zumbi = this.reserva.PegarObjeto();
-            zumbi.GameObject.transform.position = posicaoDeCriacao;
-            ControlaInimigo controle = zumbi.GameObject.GetComponent<ControlaInimigo>();
-            controle.meuGerador = this;
-            quantidadeDeZumbisVivos++;
+            CriarZumbi(posicaoDeCriacao);
         }
+        return null;
     }
 
-    Vector3 AleatorizarPosicao()
+    private void CriarZumbi(Vector3 posicaoDeCriacao)
+    {
+        var zumbi = this.reserva.PegarObjeto();
+        zumbi.GameObject.transform.position = posicaoDeCriacao;
+    }
+
+    private Vector3 ProcurarPosicaoValida()
+    {
+        Collider[] colisores;
+        Vector3 posicaoDeCriacao;
+        do
+        {
+            posicaoDeCriacao = SortearPosicaoDentroDoGerador();
+            colisores = Physics.OverlapSphere(posicaoDeCriacao, 1, LayerZumbi);
+        } while (colisores.Length > 0);
+
+        return posicaoDeCriacao;
+    }
+
+    private Vector3 SortearPosicaoDentroDoGerador()
     {
         Vector3 posicao = Random.insideUnitSphere * distanciaDeGeracao;
         posicao += transform.position;
         posicao.y = 0;
 
         return posicao;
-    }
-
-    public void DiminuirQuantidadeDeZumbisVios()
-    {
-        quantidadeDeZumbisVivos--;
     }
 }
